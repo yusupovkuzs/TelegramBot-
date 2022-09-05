@@ -1,45 +1,6 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
-from settings import TG_TOKEN, dic_comp, MY_UN
-from telegram import ReplyKeyboardMarkup, KeyboardButton
-import random
-from bs4 import BeautifulSoup
-import requests
-
-
-def sms(bot, update):
-    print('Кто-то отправил команду /start. Что мне делать?')
-    bot.message.reply_text(
-        '¡hola, preciosa!\ntienes un nombre bonito, {}, me gusta mucho!'.format(bot.message.chat.first_name),
-        reply_markup=get_keyboard())
-    print(bot.message)
-
-
-def get_comp(bot, update):
-    rand_comp = random.randint(1, 50)
-    bot.message.reply_text(dic_comp[rand_comp])
-
-
-def get_contact(bot, update):
-    print(bot.message.contact)
-    bot.message.reply_text('Пользователь {} получил ваш контакт!'.format(MY_UN))
-
-
-def get_location(bot, update):
-    print(bot.message.location)
-    bot.message.reply_text('Пользователь {} получил вашу геопозицию!'.format(MY_UN))
-
-
-def get_keyboard():
-    location_button = KeyboardButton('Отправить геопозицию', request_location=True)
-    contact_button = KeyboardButton('Отправить контакты', request_contact=True)
-    my_keyboard = ReplyKeyboardMarkup(
-        [['Получить прикольчик'], ['Начать'], [location_button, contact_button]], resize_keyboard=True)  # add buttons
-    return my_keyboard
-
-
-def parrot(bot, update):
-    print(bot.message.text)
-    bot.message.reply_text(bot.message.text)
+from settings import TG_TOKEN
+from handlers import sms, get_comp, get_contact, get_location, parrot
 
 
 def main():
@@ -56,4 +17,5 @@ def main():
     my_bot.idle()  # the bot will work until it is stopped
 
 
-main()
+if __name__ == '__main__':
+    main()
