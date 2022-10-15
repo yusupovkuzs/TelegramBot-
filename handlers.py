@@ -3,6 +3,7 @@ from utils import get_keyboard
 from settings import dic_comp, MY_UN
 from telegram import ReplyKeyboardRemove, ReplyKeyboardMarkup, ParseMode
 from telegram.ext import ConversationHandler
+from glob import glob
 
 
 def sms(bot, update):
@@ -14,8 +15,14 @@ def sms(bot, update):
 
 
 def get_comp(bot, update):
-    rand_comp = random.randint(1, 50)
-    bot.message.reply_text(dic_comp[rand_comp])
+    list_images = glob('images/love/*')
+    picture = random.choice(list_images)
+    comp = dic_comp[random.randint(1, 50)]
+    pic_or_text = random.randint(0, 1)
+    if pic_or_text == 0:
+        bot.message.reply_text(comp)
+    else:
+        update.bot.send_photo(chat_id=bot.message.chat.id, photo=open(picture, 'rb'))
 
 
 def get_contact(bot, update):
@@ -97,13 +104,13 @@ def form_get_color(bot, update):
 def form_end(bot, update):
     update.user_data['dream'] = '' if bot.message.text == 'Пропустить' else bot.message.text
     text = ''' \U0001F60D Твоя анкета \U0001F60D:
-    <i>\U0001F451 Имя \U0001F451:</i> {name} 
-    <i>\U0001F92B Возраст \U0001F92B:</i> {age}
-    <i>\U0001F4FB Любимая группа \U0001F4FB:</i> {group}
-    <i>\U0001F4FD Любимый фильм \U0001F4FD:</i> {film}
-    <i>\U0001F37D Любимая еда \U0001F37D:</i> {eat}
-    <i>\U0001F308 Любимый цвет \U0001F308:</i> {color}
-    <i>\U0001F52E Мечта \U0001F52E:</i> {dream}
+    <i>\U0001F451 Имя \U0001F451:</i> <b> {name} </b> 
+    <i>\U0001F92B Возраст \U0001F92B:</i> <b> {age} </b>
+    <i>\U0001F3B8 Любимая группа \U0001F3B8:</i> <b> {group} </b>
+    <i>\U0001F4FD Любимый фильм \U0001F4FD:</i> <b> {film} </b>
+    <i>\U0001F37D Любимая еда \U0001F37D:</i> <b> {eat} </b>
+    <i>\U0001F308 Любимый цвет \U0001F308:</i> <b> {color} </b>
+    <i>\U0001F52E Мечта \U0001F52E:</i> <b> {dream} </b>
     '''.format(**update.user_data)
     bot.message.reply_text(text, parse_mode=ParseMode.HTML)
     bot.message.reply_text('Спасибо за твои ответы!', reply_markup=get_keyboard())

@@ -1,7 +1,7 @@
 from telegram import KeyboardButton, ReplyKeyboardMarkup
 
 
-def get_keyboard():  # menu_buttons
+def menu_keyboard():  # menu_buttons
     location_button = KeyboardButton('Отправить геопозицию \U0001F5FA', request_location=True)
     contact_button = KeyboardButton('Отправить контакты \U0001F4DE', request_contact=True)
     my_keyboard = ReplyKeyboardMarkup(
