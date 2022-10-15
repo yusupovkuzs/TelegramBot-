@@ -1,16 +1,43 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
 from settings import TG_TOKEN
-from handlers import sms, get_comp, get_contact, get_location, parrot
+from handlers import *
+import logging
+
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(message)s',
+                    level=logging.INFO,
+                    filename='bot.log')
 
 
 def main():
     my_bot = Updater(TG_TOKEN)
-
+    logging.info('Start bot')
     my_bot.dispatcher.add_handler(CommandHandler('start', sms))
-    my_bot.dispatcher.add_handler(MessageHandler(Filters.regex('Получить прикольчик'), get_comp))
+    my_bot.dispatcher.add_handler(MessageHandler(Filters.regex('Получить прикольчик \U0001F970'), get_comp))
     my_bot.dispatcher.add_handler(MessageHandler(Filters.contact, get_contact))
     my_bot.dispatcher.add_handler(MessageHandler(Filters.location, get_location))
     my_bot.dispatcher.add_handler(MessageHandler(Filters.regex('Начать'), sms))
+    my_bot.dispatcher.add_handler(
+        ConversationHandler(entry_points=[MessageHandler(Filters.regex('Заполнить анкету \U0001F58A'), form_start)],
+                            states={
+                                'user_name': [MessageHandler(Filters.text, form_get_name)],
+                                'user_age': [MessageHandler(Filters.text, form_get_age)],
+                                'user_group': [MessageHandler(Filters.regex('Пропустить'), form_get_group),
+                                               MessageHandler(Filters.text, form_get_group)],
+                                'user_film': [MessageHandler(Filters.regex('Пропустить'), form_get_film),
+                                              MessageHandler(Filters.text, form_get_film)],
+                                'user_eat': [MessageHandler(Filters.regex('Пропустить'), form_get_eat),
+                                             MessageHandler(Filters.text, form_get_eat)],
+                                'user_book': [MessageHandler(Filters.regex('Пропустить'), form_get_book),
+                                              MessageHandler(Filters.text, form_get_book)],
+                                'user_color': [MessageHandler(Filters.regex('Пропустить'), form_get_color),
+                                               MessageHandler(Filters.text, form_get_color)],
+                                'user_dream': [MessageHandler(Filters.regex('Пропустить'), form_end),
+                                               MessageHandler(Filters.text, form_end)]
+                            },
+                            fallbacks=[MessageHandler(Filters.text | Filters.video | Filters.photo | Filters.document,
+                                                      dont_know)]
+                            )
+        )
     my_bot.dispatcher.add_handler(MessageHandler(Filters.text, parrot))
 
     my_bot.start_polling()  # checks for the presence of messages from the Telegram
